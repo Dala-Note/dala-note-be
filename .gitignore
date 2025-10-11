@@ -1,8 +1,7 @@
 appsettings.Development.json
 .env
-Add-Content -Path ".gitignore" -Value "`n# .NET Solution and Build files"
-Add-Content -Path ".gitignore" -Value "*.sln"
-Add-Content -Path ".gitignore" -Value "dotnet/src/*/obj/"
-Add-Content -Path ".gitignore" -Value "dotnet/src/*/bin/"
-Add-Content -Path ".gitignore" -Value "dotnet/tests/*/obj/"
-Add-Content -Path ".gitignore" -Value "dotnet/tests/*/bin/"
+*.sln
+dotnet/src/*/obj/
+dotnet/src/*/bin/
+dotnet/tests/*/obj/
+dotnet/tests/*/bin/
