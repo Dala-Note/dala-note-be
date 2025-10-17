@@ -1,8 +1,10 @@
-using Microsoft.AspNetCore.Mvc;
 using DalaNote.NoteManagement.Services;
-using DalaNote.NoteManagement.Models.Entities;
-
+using DalaNote.Common.Models;
 namespace DalaNote.NoteManagement.Controllers;
+using Microsoft.AspNetCore.Mvc;
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 [ApiController]
 [Route("api/[controller]")]
@@ -16,78 +18,78 @@ public class NotesController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<IActionResult> GetNotes()
+    public async Task<ActionResult<ApiResponse<List<Note>>>> GetNotes()
     {
-        var userId = GetUserId(); // Simple user ID for now
-        var notes = await _noteService.GetUserNotesAsync(userId);
-        return Ok(notes);
+        var userId = GetUserId();
+        var result = await _noteService.GetUserNotesAsync(userId);
+        return Ok(result);
     }
 
     [HttpGet("{id}")]
-    public async Task<IActionResult> GetNote(Guid id)
+    public async Task<ActionResult<ApiResponse<Note>>> GetNote(Guid id)
     {
         var userId = GetUserId();
-        var note = await _noteService.GetNoteAsync(id, userId);
+        var result = await _noteService.GetNoteAsync(id, userId);
         
-        if (note == null) return NotFound();
-        return Ok(note);
+        if (!result.Success)
+            return NotFound(result);
+            
+        return Ok(result);
     }
 
     [HttpPost]
-    public async Task<IActionResult> CreateNote([FromBody] CreateNoteRequest request)
+    public async Task<ActionResult<ApiResponse<Note>>> CreateNote([FromBody] CreateNoteRequest request)
     {
         var userId = GetUserId();
+        var result = await _noteService.CreateNoteAsync(request, userId); // Pass request directly
         
-        var note = new Note
-        {
-            Title = request.Title,
-            Content = request.Content,
-            UserId = userId,
-            Category = request.Category,
-            Tags = request.Tags
-        };
-
-        var createdNote = await _noteService.CreateNoteAsync(note);
-        return CreatedAtAction(nameof(GetNote), new { id = createdNote.Id }, createdNote);
+        if (result.Success)
+            return CreatedAtAction(nameof(GetNote), new { id = result.Data!.Id }, result);
+        
+        return BadRequest(result);
     }
 
     [HttpPut("{id}")]
-    public async Task<IActionResult> UpdateNote(Guid id, [FromBody] UpdateNoteRequest request)
+    public async Task<ActionResult<ApiResponse<Note>>> UpdateNote(Guid id, [FromBody] UpdateNoteRequest request)
     {
         var userId = GetUserId();
-        var updatedNote = await _noteService.UpdateNoteAsync(id, userId, request);
+        var result = await _noteService.UpdateNoteAsync(id, userId, request);
         
-        if (updatedNote == null) return NotFound();
-        return Ok(updatedNote);
+        if (!result.Success)
+            return BadRequest(result);
+            
+        return Ok(result);
     }
 
     [HttpDelete("{id}")]
-    public async Task<IActionResult> DeleteNote(Guid id)
+    public async Task<ActionResult<ApiResponse<bool>>> DeleteNote(Guid id)
     {
         var userId = GetUserId();
         var result = await _noteService.DeleteNoteAsync(id, userId);
         
-        if (!result) return NotFound();
+        if (!result.Success)
+            return BadRequest(result);
+            
         return NoContent();
     }
 
     [HttpGet("categories")]
-    public async Task<IActionResult> GetCategories()
+    public async Task<ActionResult<ApiResponse<List<string>>>> GetCategories()
     {
         var userId = GetUserId();
-        var categories = await _noteService.GetUserCategoriesAsync(userId);
-        return Ok(categories);
+        var result = await _noteService.GetUserCategoriesAsync(userId);
+        return Ok(result);
     }
 
     [HttpGet("tags")]
-    public async Task<IActionResult> GetTags()
+    public async Task<ActionResult<ApiResponse<List<string>>>> GetTags()
     {
         var userId = GetUserId();
-        var tags = await _noteService.GetUserTagsAsync(userId);
-        return Ok(tags);
+        var result = await _noteService.GetUserTagsAsync(userId);
+        return Ok(result);
     }
 
-    // Simple user ID - replace with JWT authentication later
+    // Simple user ID, replace with JWT authentication later
     private Guid GetUserId()
     {
         return Guid.Parse("a1b2c3d4-1234-5678-9101-abcdef123456");

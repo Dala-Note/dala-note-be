@@ -1,8 +1,11 @@
-using DalaNote.Data.Context;
+using Microsoft.EntityFrameworkCore;
+using DalaNote.Common.Models;
+using System;
+using System.Linq;
 
 namespace DalaNote.Data.Context;
 
-public class DalaNoteDbContext : DalaNoteDbContext
+public class DalaNoteDbContext : DbContext
 {
     public DalaNoteDbContext(DbContextOptions<DalaNoteDbContext> options) : base(options) { }
 
