@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+
 public class UpdateNoteRequest
 {
     public string Title { get; set; } = string.Empty;
