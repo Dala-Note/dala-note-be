@@ -1,0 +1,18 @@
+# FastAPI and server
+fastapi>=0.104.1
+uvicorn[standard]>=0.24.0
+python-multipart>=0.0.6
+
+# AI Services
+openai-whisper
+pytesseract>=0.3.10
+Pillow>=10.1.0
+gTTS>=2.3.0
+
+# Audio processing
+pydub>=0.25.1
+
+# Utilities
+python-dotenv>=1.0.0
+aiofiles>=23.2.1
+
